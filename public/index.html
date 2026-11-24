@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Task Management</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Auth screen -->
+  <section id="auth-view" class="auth hidden">
+    <div class="auth-card">
+      <div class="brand big"><span class="logo">✓</span> TaskFlow</div>
+      <p class="muted">Plan projects, assign work and track it through review.</p>
+      <div class="tabs">
+        <button class="tab active" data-auth-tab="login">Sign in</button>
+        <button class="tab" data-auth-tab="register">Create account</button>
+      </div>
+      <form id="login-form" class="stack">
+        <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+        <label>Password <input name="password" type="password" required autocomplete="current-password" /></label>
+        <button class="btn primary" type="submit">Sign in</button>
+      </form>
+      <form id="register-form" class="stack hidden">
+        <label>Full name <input name="name" required /></label>
+        <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+        <label>Password <input name="password" type="password" minlength="8" required autocomplete="new-password" /></label>
+        <button class="btn primary" type="submit">Create account</button>
+      </form>
+      <p class="hint">Demo (after <code>npm run seed</code>): admin@example.com / manager@example.com / member@example.com — password <code>Password123!</code></p>
+    </div>
+  </section>
+
+  <!-- App shell -->
+  <div id="app-view" class="shell hidden">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo">✓</span> TaskFlow</div>
+      <nav>
+        <a href="#/dashboard" data-nav="dashboard">Dashboard</a>
+        <a href="#/projects" data-nav="projects">Projects</a>
+        <a href="#/my-tasks" data-nav="my-tasks">My tasks</a>
+        <a href="#/users" data-nav="users" class="admin-only">Users</a>
+      </nav>
+      <div class="me">
+        <div id="me-name"></div>
+        <span id="me-role" class="badge"></span>
+        <button id="logout" class="btn ghost small">Sign out</button>
+      </div>
+    </aside>
+    <main id="main"></main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="close" id="modal-close" aria-label="Close">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
