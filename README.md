@@ -56,6 +56,22 @@ Run the tests:
 npm test
 ```
 
+## Production setup
+
+Set a strong `JWT_SECRET` and `NODE_ENV=production` in the environment before starting the server. Never use the example secret in a deployed environment. Restart the process after changing the secret, because existing tokens signed with the previous secret will become invalid.
+
+## Deploy to Railway
+
+1. Push this project to a Git repository.
+2. Create a Railway project and select the repository.
+3. Add a persistent volume mounted at `/app/data`.
+4. Set `JWT_SECRET` to a strong random value and keep `DB_PATH=/app/data/tasks.db`.
+5. Generate/deploy the Railway domain.
+
+Railway uses [railway.toml](./railway.toml) and the included [Dockerfile](./Dockerfile). The health check is `/api/health`.
+
+Current Railway deployment: https://taskflow-production-production.up.railway.app
+
 ## REST API
 
 All endpoints except register, login and health need the header `Authorization: Bearer <token>`.

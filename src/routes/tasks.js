@@ -5,6 +5,15 @@ const { STATUSES, allowedNext, checkTransition } = require('../workflow');
 const PRIORITIES = ['low', 'medium', 'high', 'urgent'];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+function isValidDate(value) {
+  if (!DATE_RE.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day;
+}
+
 const TASK_SELECT = `
   SELECT t.*, a.name AS assignee_name, c.name AS creator_name, p.name AS project_name
   FROM tasks t
@@ -37,7 +46,9 @@ module.exports = function taskRoutes(db) {
       out.priority = body.priority;
     }
     if (body.due_date !== undefined) {
-      if (body.due_date !== null && body.due_date !== '' && !DATE_RE.test(body.due_date)) return { error: 'due_date must be YYYY-MM-DD' };
+      if (body.due_date !== null && body.due_date !== '' && !isValidDate(body.due_date)) {
+        return { error: 'due_date must be a valid date in YYYY-MM-DD format' };
+      }
       out.due_date = body.due_date || null;
     }
     if (body.assignee_id !== undefined) out.assignee_id = body.assignee_id === null || body.assignee_id === '' ? null : Number(body.assignee_id);

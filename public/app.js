@@ -53,19 +53,19 @@
 
   $('#login-form').addEventListener('submit', guard(async (e) => {
     e.preventDefault();
-    signIn(await api('/auth/login', { method: 'POST', body: formData(e.target) }));
+    await signIn(await api('/auth/login', { method: 'POST', body: formData(e.target) }));
   }));
   $('#register-form').addEventListener('submit', guard(async (e) => {
     e.preventDefault();
-    signIn(await api('/auth/register', { method: 'POST', body: formData(e.target) }));
+    await signIn(await api('/auth/register', { method: 'POST', body: formData(e.target) }));
     toast('Account created');
   }));
   $('#logout').onclick = logout;
 
-  function signIn({ token, user }) {
+  async function signIn({ token, user }) {
     state.token = token; state.user = user;
     localStorage.setItem('tf_token', token);
-    showApp();
+    await showApp();
   }
   function logout() {
     state.token = null; state.user = null;

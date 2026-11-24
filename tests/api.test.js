@@ -30,6 +30,7 @@ describe('Task Management API', () => {
 
   test('rejects bad credentials, duplicate emails and missing tokens', async () => {
     await request(app).post('/api/auth/login').send({ email: 'admin@test.dev', password: 'wrong' }).expect(401);
+    await request(app).post('/api/auth/login').send({ email: 'ADMIN@TEST.DEV', password: 'Password123!' }).expect(200);
     await request(app).post('/api/auth/register').send({ name: 'x', email: 'admin@test.dev', password: 'Password123!' }).expect(409);
     await request(app).post('/api/auth/register').send({ name: 'x', email: 'bad', password: 'Password123!' }).expect(400);
     await request(app).get('/api/projects').expect(401);
@@ -59,6 +60,8 @@ describe('Task Management API', () => {
 
   test('full task CRUD with validation', async () => {
     await request(app).post('/api/tasks').set(as('manager')).send({ project_id: ids.project }).expect(400);
+    await request(app).post('/api/tasks').set(as('manager'))
+      .send({ project_id: ids.project, title: 'Invalid date', due_date: '2030-02-30' }).expect(400);
     await request(app).post('/api/tasks').set(as('manager'))
       .send({ project_id: ids.project, title: 'X', assignee_id: ids.outsider }).expect(400);
     await request(app).post('/api/tasks').set(as('member')).send({ project_id: ids.project, title: 'X' }).expect(403);

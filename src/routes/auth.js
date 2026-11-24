@@ -13,7 +13,8 @@ module.exports = function authRoutes(db) {
     if (!EMAIL_RE.test(email || '')) return res.status(400).json({ error: 'A valid email is required' });
     if (!password || password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
 
-    if (db.prepare('SELECT 1 FROM users WHERE email = ?').get(email)) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (db.prepare('SELECT 1 FROM users WHERE email = ?').get(normalizedEmail)) {
       return res.status(409).json({ error: 'Email is already registered' });
     }
     // The very first account becomes the administrator; everyone else starts as a member.
@@ -22,14 +23,15 @@ module.exports = function authRoutes(db) {
     const hash = bcrypt.hashSync(password, 10);
     const info = db
       .prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
-      .run(String(name).trim(), email.toLowerCase(), hash, role);
-    const user = { id: info.lastInsertRowid, name: String(name).trim(), email: email.toLowerCase(), role };
+      .run(String(name).trim(), normalizedEmail, hash, role);
+    const user = { id: info.lastInsertRowid, name: String(name).trim(), email: normalizedEmail, role };
     res.status(201).json({ token: signToken(user), user });
   });
 
   router.post('/login', (req, res) => {
     const { email, password } = req.body || {};
-    const row = db.prepare('SELECT * FROM users WHERE email = ?').get(email || '');
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const row = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail);
     if (!row || !bcrypt.compareSync(password || '', row.password_hash)) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
